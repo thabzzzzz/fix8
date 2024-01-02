@@ -31,7 +31,7 @@
             <nav class="navbar navbar-expand-lg navbar-dark ">
             <div class="container-fluid">
             <a class="navbar-brand" href="#">
-        <img src="DLs/background/logo.svg" width="120" height="60" alt="">
+        <img src="DLs/background/logo.png" width="120" height="60" alt="">
     </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -39,17 +39,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link active" href="dashboard.php" style="font-size: 30px">Home</a>
+                <a class="nav-link " href="dashboard.php" style="font-size: 30px">Home</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link active" href="feed.php" style="font-size: 30px">Feed</a>
+                <a class="nav-link " href="feed.php" style="font-size: 30px">Feed</a>
                 </li>
                 <li class="nav-item">
                 <a class="nav-link" href="addEvent.php" style="font-size: 30px">Add event</a>
                 </li>
             
                 <li class="nav-item">
-                <a class="nav-link " href="profile.php" tabindex="-1"  style="font-size: 30px">Profile: <?php echo $_SESSION['username']; ?></a>
+                <a class="nav-link active" href="profile.php" tabindex="-1"  style="font-size: 30px">Profile: <?php echo $_SESSION['username']; ?></a>
                 </li>
             </ul>
             </div>
@@ -76,9 +76,9 @@
                 
     <div class="row ">
     <section class="h-100 gradient-custom-2">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col col-lg-9 col-xl-7">
+  <div class="container ">
+    <div class="row d-flex justify-content-center align-items-center ">
+      <div class="col ">
         <div class="card">
           <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
             <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
@@ -174,8 +174,8 @@ if ($result->num_rows > 0) {
     echo "
     
     <div class='col-md-4'>
-    <div class='card' style='width: 12rem;'>
-<img src='eventGallery/".$row['eventImage']."' class='card-img-top' alt='...'>
+    <div class='card' style='width: 20rem; overflow: hidden;'>
+<img src='eventGallery/".$row['eventImage']."' class='card-img-top d-block mx-auto' style='width: 20rem; height:190px '>
 <div class='card-body'>
     <h5 class='card-title'>". $row['eventname']."</h5>
         <p class='card-subtitle mb-2 text-muted'>". $row['date']." at: <b>". $row['location']."</b></p>
@@ -227,44 +227,7 @@ if ($result->num_rows > 0) {
     <br/>
     <br/>
     <br/>
-    <h3> Social</h3>
-<div class="row col col-lg-9 col-xl-7" style="margin: auto;">
-<div class="card">
-  <p style="color:black !important; font-size:20px;">All users</p>
- 
-<div class="row friendsBox">
-    <div class="col-sm-3">
-    <img src="profilePics/u1.jpg" alt="Profile image " width="150px"  height="150px" class="rounded-circle">
-    </div>
-    <div class="col-sm-4">
-      <p class="lead fw-normal mb-1">Jason</p>
-      <a class="lead fw-normal mb-1">View profile</a>
-    </div>
-    <div class="col-sm-4" style="margin-top: 30px;">
-      <p class="lead fw-normal mb-1"> Accept <img src="DLs/icons/tick.png" width="20px" height="20px"/></p>
-      <br/>
-      <p class="lead fw-normal mb-1"> Reject <img src="DLs/icons/cross.png" width="20px" height="20px"/></p>
-    </div>
-  </div>
-  <div class="row friendsBox">
-    <div class="col-sm-3">
-    <img src="profilePics/u2.jpg" alt="Profile image " width="150px"  height="150px" class="rounded-circle">
-    </div>
-    <div class="col-sm-4">
-      <p class="lead fw-normal mb-1">Thabo</p>
-      <a class="lead fw-normal mb-1" href="friendProfile.php">View profile</a>
-    </div>
-    <div class="col-sm-4" style="margin-top: 30px;">
-    <br/>
-    <p class="lead fw-normal mb-1"> Send request<img src="DLs/icons/send.png" width="20px" height="20px"/></p>
-      
-      
-    </div>
-  </div>
 
-</div>
-
-</div>
 
 
 
@@ -280,22 +243,10 @@ if ($result->num_rows > 0) {
 
             
             </div>
-            <?php
-  function runMyFunction() {
-    echo 'I just ran a php function';
-  }
 
-  if (isset($_GET['hello'])) {
-    function writeMsg() {
-      echo "Hello world!";
-    }
 
-    writeMsg();
-  }
-?>
 
-Hello there!
-<a href='profile.php?hello=true'>Run PHP Function</a> 
+
         </body>
         
         </html>

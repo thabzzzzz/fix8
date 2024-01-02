@@ -3,6 +3,101 @@
         include("auth_session.php");
         require('db.php');
         ?>
+                        <?php
+
+
+
+
+$user=$_SESSION["username"];
+
+?>
+
+<?php
+if (isset($_POST['submit'])) {
+    $user = $_SESSION['username'];
+
+    $fullName = $_POST['fullName'];
+    $description = $_POST['description'];
+    $contact = $_POST['contact'];
+    $place = $_POST['place'];
+    $DoB = $_POST['DoB'];
+
+    // Fetch existing user data from the database
+    $sql = "SELECT * FROM users WHERE username='$user'";
+    $result = $con->query($sql);
+    $row = mysqli_fetch_array($result);
+
+    // Check and update fields only if they are not empty
+    if (!empty($fullName)) {
+        $fullName = mysqli_real_escape_string($con, $fullName);
+    } else {
+        $fullName = $row['fullName'];
+    }
+
+    if (!empty($description)) {
+        $description = mysqli_real_escape_string($con, $description);
+    } else {
+        $description = $row['description'];
+    }
+
+    if (!empty($contact)) {
+        $contact = mysqli_real_escape_string($con, $contact);
+    } else {
+        $contact = $row['contact'];
+    }
+
+    if (!empty($place)) {
+        $place = mysqli_real_escape_string($con, $place);
+    } else {
+        $place = $row['location'];
+    }
+
+    if (!empty($DoB)) {
+        $DoB = mysqli_real_escape_string($con, $DoB);
+    } else {
+        $DoB = $row['dateOfBirth'];
+    }
+
+    // Handle profile picture upload
+    if ($_FILES['fileToUpload']['size'] > 0) {
+        $target_dir = "profilePics/";
+        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+
+        // Add your checks for file type and size here
+
+        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+            // File uploaded successfully, update the profilePic field
+            $picName = $_FILES["fileToUpload"]["name"];
+            $updateQuery = "UPDATE users SET fullName='$fullName', description='$description', contact='$contact', location='$place', dateOfBirth='$DoB', profilePic='$picName' WHERE username='$user'";
+            $result = $con->query($updateQuery);
+
+            if ($result) {
+                // Profile updated successfully
+                echo "Profile updated successfully!";
+            } else {
+                // Error updating profile
+                echo "Error updating profile!";
+            }
+        } else {
+            // Error uploading file
+            echo "Sorry, there was an error uploading your file.";
+        }
+    } else {
+        // If no image uploaded, update other profile fields only
+        $updateQuery = "UPDATE users SET fullName='$fullName', description='$description', contact='$contact', location='$place', dateOfBirth='$DoB' WHERE username='$user'";
+        $result = $con->query($updateQuery);
+
+        if ($result) {
+            // Profile updated successfully
+            header("Location: profile.php");
+            exit();
+        } else {
+            // Error updating profile
+            echo "Error updating profile!";
+        }
+    }
+}
+?>
         <!DOCTYPE html>
         <html>
         <head>
@@ -33,7 +128,7 @@
             <nav class="navbar navbar-expand-lg navbar-dark ">
             <div class="container-fluid">
             <a class="navbar-brand" href="#">
-        <img src="DLs/background/logo.svg" width="120" height="60" alt="">
+        <img src="DLs/background/logo.png" width="120" height="60" alt="">
     </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -41,10 +136,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="dashboard.php" style="font-size: 30px">Home</a>
+                <a class="nav-link " aria-current="page" href="dashboard.php" style="font-size: 30px">Home</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link active" href="feed.php" style="font-size: 30px">Feed</a>
+                <a class="nav-link " href="feed.php" style="font-size: 30px">Feed</a>
                 </li>
                 <li class="nav-item">
                 <a class="nav-link" href="addEvent.php" style="font-size: 30px">Add event</a>
@@ -105,104 +200,10 @@
                      <div class="mt-5 text-right"><input  name="delete" id="delete" value="Delete profile" class="btn btn-primary" style="background-color: #afe828!important; border-color: #afe828!important;" ></div>
                    
                     </form>
-                 <?php
+ 
 
-
-
-
-$user=$_SESSION["username"];
-
-?>
-<div id="dom-target" >
-    <?php
-        echo ($user);
-    ?>
 </div>
-<?php
-echo"$user";
-if (isset($_REQUEST['fullName'])) {
 
-    $target_dir = "profilePics/";
-$target_file = $target_dir
-. basename($_FILES["fileToUpload"]["name"]);
-$uploadOk = 1;
-
-
-if(isset($_FILES["fileToUpload"])  &&
-$_FILES["fileToUpload"]["error"] == 0) {
-$allowed_ext = array("jpg" => "image/jpg",
-    "jpeg" => "image/jpeg"
-
-    );
-$file_name = $_FILES["fileToUpload"]["name"];
-$file_type = $_FILES["fileToUpload"]["type"];
-$file_size = $_FILES["fileToUpload"]["size"];
-
-// Verify file extension
-$ext = pathinfo($file_name, PATHINFO_EXTENSION);
-
-if (!array_key_exists($ext, $allowed_ext)) {
-    die("Error: Please select a valid file format.");
-}
-
-// Verify file size - 1MB max
-$maxsize = 100048576;
-
-if ($file_size > $maxsize) {
-    die("Error: Picture must be 1MB or less");
-}
-
-// Verify MYME type of the file
-if (in_array($file_type, $allowed_ext))
-{
-    // Check whether file exists before uploading it
-    if (file_exists("upload/" . $_FILES["fileToUpload"]["name"])) {
-        echo $_FILES["fileToUpload"]["name"]." is already exists.";
-    }
-    else {
-        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"],
-            $target_file)) {
-            echo "The file ". $_FILES["fileToUpload"]["name"].
-                " has been uploaded.";
-                
-            
-            
-        }
-        else {
-            echo "Sorry, there was an error uploading your file.";
-        }
-    }
-}
-else {
-    echo "Error: Please try again.";
-}
-}
-else {
-echo "Error: ". $_FILES["fileToUpload"]["error"];
-}
-
-    $fullName = stripslashes($_REQUEST['fullName']);
-    $fullName = mysqli_real_escape_string($con, $fullName);
-    $profileDescription =stripslashes($_REQUEST['description']);
-    $profileDescription    = mysqli_real_escape_string($con, $profileDescription );
-    $dob = stripslashes($_REQUEST['DoB']);
-    $dob = mysqli_real_escape_string($con, $dob);
-    $location= stripslashes($_REQUEST['place']);
-    $location = mysqli_real_escape_string($con, $location);
-    $contact = stripslashes($_REQUEST['contact']);
-    $contact = mysqli_real_escape_string($con, $contact);
-    $picName=$_FILES["fileToUpload"]["name"];
-   
-   
-    $q2="UPDATE `users` SET `dateOfBirth`='$dob',`fullName`='$fullName',`contact`='$contact',`description`='$profileDescription',`location`='$location',profilePic='$picName' WHERE username='$user';";             
-    $r2   = mysqli_query($con, $q2);
-
-
-
-}
-
-
-?>
              
            
         </div> 

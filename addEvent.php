@@ -26,7 +26,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark ">
         <div class="container-fluid">
         <a class="navbar-brand" href="#">
-    <img src="DLs/background/logo.svg" width="120" height="60" alt="">
+    <img src="DLs/background/logo.png" width="120" height="60" alt="">
   </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -34,13 +34,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="dashboard.php" style="font-size: 30px">Home</a>
+            <a class="nav-link " aria-current="page" href="dashboard.php" style="font-size: 30px">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="feed.php" style="font-size: 30px">Feed</a>
+                <a class="nav-link " href="feed.php" style="font-size: 30px">Feed</a>
                 </li>
             <li class="nav-item">
-            <a class="nav-link" href="addEvent.php" style="font-size: 30px">Add event</a>
+            <a class="nav-link active" href="addEvent.php" style="font-size: 30px">Add event</a>
             </li>
            
             <li class="nav-item">
@@ -62,7 +62,7 @@
             <h3>Create an event here</h3>
 
             <div class="container-fluid">
-<img class="loginLogo" src="DLs/background/logo.svg" width="120" height="60" alt="">
+
     <form class="form" action="addEvent.php" method="POST" enctype='multipart/form-data'>
         <div class="form-group text-center">
         
