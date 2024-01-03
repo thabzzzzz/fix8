@@ -72,7 +72,7 @@
 
 
 
-         <div class="center">
+         <div class="center feeddiv">
 
             <?php
        $user=$_SESSION["username"];
@@ -86,45 +86,50 @@
        
        
        <div class="row">
-       
-       <?php
-       
-       if ($result->num_rows > 0) {
-         // output data of each row
-         while($row = $result->fetch_assoc()) {
-           echo "
-         
+    <?php
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Fetch average rating for each event
+            $event_id = $row['event_id'];
+            $avg_query = "SELECT AVG(rating) AS average_rating FROM event_ratings WHERE event_id = '$event_id'";
+            $avg_result = mysqli_query($con, $avg_query);
+            $avg_row = mysqli_fetch_assoc($avg_result);
+            $average_rating = $avg_row['average_rating'];
 
-
-           <div class='col-md-4'>
-           <div class='card' style='width: 18rem;'>
-      <a href='rateEvent.php'> <img src='eventGallery/".$row['eventImage']."' class='card-img-top' alt='...'></a>
-       <div class='card-body'>
-           <h5 class='card-title'>". $row['eventname']."</h5>
-               <p class='card-subtitle mb-2 text-muted'>". $row['date']." at: <b>". $row['location']."</b></p>
-           <p class='card-text'>". $row['description']."</p>
-           <p class='card-text'> By: ". $row['assocUsers']."</p>
-           <br/>
-           <footer class='blockquote-footer'><cite title='Source Title'>Tags: ". $row['hashtags']." </cite></footer>
-       </div>
-       </div>
-           </div> 
-       
-       
-           
-           ";
-       
-       
-       //end of first card
-       
-         } };
-            
-       
-         
-       
-
-?>
-       </div>
+            echo "
+                <div class='col-md-4'>
+                    <div class='card' style='width: 18rem;'>
+                        <a href='rateEvent.php'><img src='eventGallery/" . $row['eventImage'] . "' class='card-img-top' alt='...'></a>
+                        <div class='card-body'>
+                            <h5 class='card-title byUser'>" . $row['eventname'] . "</h5>
+                            <br>
+                            <p class='card-subtitle mb-2 text-muted'>" . $row['date'] . " at: <b>" . $row['location'] . "</b></p>
+                            <p class='card-text'>" . $row['description'] . "</p>
+                            <p class='card-text byUser'> By: " . $row['assocUsers'] . "</p>
+                            <p>Average Rating: " . number_format($average_rating, 1) . "</p>
+                            <br/>
+                            <footer class='blockquote-footer'><cite title='Source Title'>Tags: " . $row['hashtags'] . " </cite></footer>
+                            
+                            <!-- Rating form -->
+                            <form action='process_rating.php' method='POST'>
+                                <input type='hidden' name='event_id' value='" . $row['event_id'] . "'>
+                                <label for='rating'>Rate this event:</label>
+                                <select name='rating' id='rating'>
+                                    <option value='1'>1 Star</option>
+                                    <option value='2'>2 Stars</option>
+                                    <option value='3'>3 Stars</option>
+                                    <!-- ... Add more options if needed -->
+                                </select>
+                                <button type='submit'>Submit Rating</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            ";
+        }
+    }
+    ?>
+</div>
          </div>
             </div>
             </div>

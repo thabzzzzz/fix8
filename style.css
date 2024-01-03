@@ -386,7 +386,14 @@ a{
   width: 650px;
  }
 
+.feeddiv{
+  width: 90%;
+  margin-left: 200px;
+}
 
+.byUser{
+  font-weight: bolder;
+}
 
 
 
