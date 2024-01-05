@@ -416,3 +416,6 @@ form.row.align-items-center label {
   font-weight: bold;
 }
 
+.success{
+  color: rgb(77, 216, 77);
+}

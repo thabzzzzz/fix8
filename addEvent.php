@@ -153,8 +153,7 @@
                  else {
                      if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"],
                          $target_file)) {
-                         echo "The file ". $_FILES["fileToUpload"]["name"].
-                             " has been uploaded.";
+                         echo "<b class='success' style='color: rgb(77, 216, 77)'>Your event has been posted.</b>";
                              
                          
                          
