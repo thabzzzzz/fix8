@@ -137,9 +137,9 @@
             <div class="mb-5">
               <p class="lead fw-normal mb-1">About me</p>
               <div class="p-4" style="background-color: #f8f9fa;">
-                <p ><?php echo $row['description'] ?> </p>
-                <p>Birthday: <?php echo $row['dateOfBirth'] ?> </p>
-                <p>Contact me: <?php echo $row['contact'] ?></p>
+                <p class="ptext" ><?php echo $row['description'] ?> </p>
+                <p class="ptext">Birthday: <?php echo $row['dateOfBirth'] ?> </p>
+                <p class="ptext">Contact me: <?php echo $row['contact'] ?></p>
                
               </div>
             </div>
@@ -209,7 +209,7 @@ if ($result->num_rows > 0) {
 </div>
             
             <br/>
-            <a href="editProfile.php" class="btn btn-primary" style="background-color: #afe828!important; border-color: #afe828!important;">Edit profile</a>
+            <a href="editProfile.php" class="btn btn-primary" style='background-color: black!important; border-color: #afe828!important;'>Edit profile</a>
           </div>
 
 
@@ -245,7 +245,9 @@ if ($result->num_rows > 0) {
             </div>
 
 
-
+            <?php
+            include('footer.php');
+            ?>
 
         </body>
         

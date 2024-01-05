@@ -10,6 +10,8 @@
             <title>Rate Event</title>
             <link rel="stylesheet" href="style.css" />
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
             <link rel="apple-touch-icon" sizes="180x180" href="image/apple-touch-icon.png">
             <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
             <link rel="icon" type="image/png" sizes="16x16" href="image/favicon-16x16.png">
@@ -80,13 +82,33 @@
 
        $sql = " SELECT * FROM tbevents WHERE assocUsers IS NOT NULL ORDER BY date DESC  ";
        $result = $con->query($sql);
+
+       if (isset($_GET['error'])) {
+        $error = $_GET['error'];
+        if ($error === 'already_rated') {
+            echo "<div class='error-message'>You have already rated this event.</div>";
+        } elseif ($error === 'invalid_request') {
+            echo "<div class='error-message'>Invalid request. Please try again.</div>";
+        }
+    }
+
+      
+    ?>
+
+   
        
-       
-       ?>
+      
        
        
        <div class="row">
     <?php
+
+
+
+
+
+$sql = "SELECT * FROM tbevents WHERE assocUsers IS NOT NULL ORDER BY date DESC";
+$result = $con->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             // Fetch average rating for each event
@@ -95,11 +117,12 @@
             $avg_result = mysqli_query($con, $avg_query);
             $avg_row = mysqli_fetch_assoc($avg_result);
             $average_rating = $avg_row['average_rating'];
+            $toast_id = 'toast_' . $row['event_id'];
 
             echo "
                 <div class='col-md-4'>
-                    <div class='card' style='width: 18rem;'>
-                        <a href='rateEvent.php'><img src='eventGallery/" . $row['eventImage'] . "' class='card-img-top' alt='...'></a>
+                    <div class='card' style='width: 20rem; overflow: hidden;'>
+                        <a href='rateEvent.php'><img src='eventGallery/" . $row['eventImage'] . "' class='card-img-top d-block mx-auto' style='width: 20rem; height:190px alt='...'></a>
                         <div class='card-body'>
                             <h5 class='card-title byUser'>" . $row['eventname'] . "</h5>
                             <br>
@@ -111,27 +134,52 @@
                             <footer class='blockquote-footer'><cite title='Source Title'>Tags: " . $row['hashtags'] . " </cite></footer>
                             
                             <!-- Rating form -->
-                            <form action='process_rating.php' method='POST'>
-                                <input type='hidden' name='event_id' value='" . $row['event_id'] . "'>
-                                <label for='rating'>Rate this event:</label>
-                                <select name='rating' id='rating'>
+                            <form action='process_rating.php' method='POST' class='row align-items-center'>
+                            <input type='hidden' name='event_id' value='" . $row['event_id'] . "'>
+                            <div class='col-auto'>
+                              
+                            </div>
+                           
+                            <div class='col-auto'>
+                                <select name='rating' id='rating' class='form-select'>
                                     <option value='1'>1 Star</option>
                                     <option value='2'>2 Stars</option>
                                     <option value='3'>3 Stars</option>
-                                    <!-- ... Add more options if needed -->
+                                    
                                 </select>
-                                <button type='submit'>Submit Rating</button>
-                            </form>
+                            </div>
+                            <div class='col-auto'>
+                                <button type='submit' class='btn btn-primary' style='background-color: black!important; border-color: #afe828!important;'>Rate event</button>
+                            </div>
+                        </form>
+                        <div id='$toast_id' class='toast' role='alert' aria-live='assertive' aria-atomic='true'>
+                                <div class='toast-header'>
+                                    <strong class='me-auto'>Bootstrap</strong>
+                                    <button type='button' class='btn-close' data-bs-dismiss='toast' aria-label='Close'></button>
+                                </div>
+                                <div class='toast-body'>
+                                    Hello, world! This is a toast message.
+                                </div>
+                            </div>
+                        
                         </div>
                     </div>
                 </div>
             ";
         }
     }
+    
+    
     ?>
 </div>
          </div>
             </div>
             </div>
+
+            <?php
+            include('footer.php');
+            ?>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
         </body>
         </html>

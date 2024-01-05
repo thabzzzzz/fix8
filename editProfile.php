@@ -196,8 +196,8 @@ if (isset($_POST['submit'])) {
                   
 
                     
-                    <div class="mt-5 text-right"><input type="submit" name="submit" value="Update profile" class="btn btn-primary" style="background-color: #afe828!important; border-color: #afe828!important;" ></div> 
-                     <div class="mt-5 text-right"><input  name="delete" id="delete" value="Delete profile" class="btn btn-primary" style="background-color: #afe828!important; border-color: #afe828!important;" ></div>
+                    <div class="mt-5 text-right"><input type="submit" name="submit" value="Update profile" class="btn btn-primary" style='background-color: black!important; border-color: #afe828!important;' ></div> 
+                     <div class="mt-5 text-right"><input  name="delete" id="delete" value="Delete profile" class="btn btn-primary" style='background-color: black!important; border-color: #afe828!important;' ></div>
                    
                     </form>
  
@@ -208,6 +208,9 @@ if (isset($_POST['submit'])) {
            
         </div> 
             </div>
+            <?php
+            include('footer.php');
+            ?>
         </body>
 
         <script src="script.js"></script>

@@ -1,5 +1,4 @@
 <?php
-// Connect to your database (assuming you're using mysqli)
 include('auth_session.php');
 require('db.php');
 
@@ -17,14 +16,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $checkQuery = "SELECT * FROM event_ratings WHERE event_id = $eventId AND user_id = $userId";
     $result = mysqli_query($con, $checkQuery);
     if (mysqli_num_rows($result) > 0) {
-        // User has already rated this event, you can handle this case as needed
-        // For example, update the existing rating or show an error message
+        // User has already rated this event
+        header("Location: feed.php?error=already_rated");
+        exit();
     } else {
         // Insert the new rating into your database
         $insertQuery = "INSERT INTO event_ratings (event_id, user_id, rating) VALUES ('$eventId', '$userId', '$rating')";
         if (mysqli_query($con, $insertQuery)) {
             // Rating successfully added
-            // You can redirect back to the feed page or do something else
             header("Location: feed.php");
             exit();
         } else {

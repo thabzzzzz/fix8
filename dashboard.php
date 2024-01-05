@@ -136,6 +136,9 @@ if ($result->num_rows > 0) {
 
             
             </div> 
+            <?php
+            include('footer.php');
+            ?>
         </body>
         <script src="script.js"></script>
         </html>

@@ -44,10 +44,10 @@
 
         if ($rows == 1) {
             $userData = mysqli_fetch_assoc($result);
-            $_SESSION['id'] = $userData['id']; // Set user ID in the session
+            $_SESSION['id'] = $userData['id']; 
             $_SESSION['username'] = $username;
 
-            // Redirect to user dashboard page
+            
             header("Location: dashboard.php");
             exit();
         } else {

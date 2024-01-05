@@ -140,9 +140,6 @@ a:hover{
   margin:auto;
 }
 
-button:hover{
- background-color: #ee018c;
-}
 
 
 
@@ -167,10 +164,10 @@ button:hover{
 }
 
 .btn:hover, .btn:focus {
-      background: var(--gradient) !important;
+   
   -webkit-background-clip: none !important;
   -webkit-text-fill-color: #fff !important;
-  border: 5px solid #fff !important; 
+ 
   box-shadow: #222 1px 0 10px;
   text-decoration: underline;
   font-family: 'Dosis', sans-serif !important;
@@ -395,5 +392,27 @@ a{
   font-weight: bolder;
 }
 
+.error-message {
+  color: red;
+  font-weight: bold; /* Adjust styling as needed */
+}
 
+form.row.align-items-center div {
+  margin-bottom: 0; /* Reset margin */
+}
+
+form.row.align-items-center label {
+  margin-bottom: 0; /* Reset margin */
+  margin-right: 10px; /* Adjust spacing between label and dropdown */
+}
+
+.footer-text{
+  margin-top: 200px;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.ptext{
+  font-weight: bold;
+}
 
