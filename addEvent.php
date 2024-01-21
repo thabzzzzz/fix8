@@ -1,6 +1,7 @@
-    <?php
-    //include auth_session.php file on all user panel pages
-    include("auth_session.php");
+<?php
+session_start();
+
+require('db.php');
     ?>
     <!DOCTYPE html>
     <html>
@@ -108,115 +109,95 @@
 
 
 
-            <?php
-    require('db.php');
-    
-    if (isset($_REQUEST['eventname'])) {
-
-            $target_dir = "eventGallery/";
-             $target_file = $target_dir
-           . basename($_FILES["fileToUpload"]["name"]);
-             $uploadOk = 1;
-
-            
-             if(isset($_FILES["fileToUpload"])  &&
-             $_FILES["fileToUpload"]["error"] == 0) {
-             $allowed_ext = array("jpg" => "image/jpg",
-                 "jpeg" => "image/jpeg"
-     
-                 );
-             $file_name = $_FILES["fileToUpload"]["name"];
-             $file_type = $_FILES["fileToUpload"]["type"];
-             $file_size = $_FILES["fileToUpload"]["size"];
-     
-             // Verify file extension
-             $ext = pathinfo($file_name, PATHINFO_EXTENSION);
-     
-             if (!array_key_exists($ext, $allowed_ext)) {
-                 die("Error: Please select a valid file format.");
-             }
-     
-             // Verify file size - 1MB max
-             $maxsize = 100048576;
-     
-             if ($file_size > $maxsize) {
-                 die("Error: Picture must be 1MB or less");
-             }
-     
-             // Verify MYME type of the file
-             if (in_array($file_type, $allowed_ext))
-             {
-                 // Check whether file exists before uploading it
-                 if (file_exists("upload/" . $_FILES["fileToUpload"]["name"])) {
-                     echo $_FILES["fileToUpload"]["name"]." is already exists.";
-                 }
-                 else {
-                     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"],
-                         $target_file)) {
-                         echo "<b class='success' style='color: rgb(77, 216, 77)'>Your event has been posted.</b>";
-                             
-                         
-                         
-                     }
-                     else {
-                         echo "Sorry, there was an error uploading your file.";
-                     }
-                 }
-             }
-             else {
-                 echo "Error: Please try again.";
-             }
-         }
-         else {
-             echo "Error: ". $_FILES["fileToUpload"]["error"];
-         }
-
-
-
-
-
-
-     
-        $eventname = stripslashes($_REQUEST['eventname']);
-        $user=$_SESSION["username"];
-        $eventname = mysqli_real_escape_string($con, $eventname);
-        $description    = stripslashes($_REQUEST['description']);
-        $description    = mysqli_real_escape_string($con, $description);
-        $location = stripslashes($_REQUEST['location']);
-        $location = mysqli_real_escape_string($con, $location);
-        $tags = stripslashes($_REQUEST['tags']);
-        $tags = mysqli_real_escape_string($con, $tags);
-        $date = ($_REQUEST['date']);
-        $picName=$_FILES["fileToUpload"]["name"];
-        $query    = "INSERT into `tbevents` (eventname, description, date,location,hashtags, eventImage, assocUsers)
-                     VALUES ('$eventname','$description','$date','$location','$tags','$picName','$user')";
-        $result   = mysqli_query($con, $query);
-       
-    } else {
-?>
-
 <?php
+session_start();
+
+require('db.php');
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['eventname'])) {
+        $target_dir = "eventGallery/";
+        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+
+        // Validate and move uploaded file
+        if (validateAndMoveFile()) {
+            $eventname = mysqli_real_escape_string($con, $_POST['eventname']);
+            $description = mysqli_real_escape_string($con, $_POST['description']);
+            $location = mysqli_real_escape_string($con, $_POST['location']);
+            $tags = mysqli_real_escape_string($con, $_POST['tags']);
+            $date = $_POST['date'];
+            $picName = $_FILES["fileToUpload"]["name"];
+            $user = $_SESSION["username"];
+
+            // Use prepared statement to prevent SQL injection
+            $query = "INSERT INTO tbevents (eventname, description, date, location, hashtags, eventImage, assocUsers) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($con, $query);
+            mysqli_stmt_bind_param($stmt, "sssssss", $eventname, $description, $date, $location, $tags, $picName, $user);
+            mysqli_stmt_execute($stmt);
+
+            echo "<b class='success' style='color: rgb(77, 216, 77)'>Your event has been posted.</b>";
+
+            mysqli_stmt_close($stmt);
+        }
     }
-    if (isset($_REQUEST['editEventName'])) {
 
-   
-        $toEdit=($_REQUEST['editEvent']);
+    if (isset($_POST['editEventName'])) {
+        $toEdit = $_POST['editEvent'];
 
+        $editName = mysqli_real_escape_string($con, $_POST['editEventName']);
+        $editDescription = mysqli_real_escape_string($con, $_POST['editDescription']);
+        $editLocation = mysqli_real_escape_string($con, $_POST['editLocation']);
+        $editTags = mysqli_real_escape_string($con, $_POST['editTags']);
+        $editDate = $_POST['editDate'];
 
-        $editName = stripslashes($_REQUEST['editEventName']);
-        $editName = mysqli_real_escape_string($con, $editName);
-        $editDescription =stripslashes($_REQUEST['editDescription']);
-        $editDescription    = mysqli_real_escape_string($con, $editDescription);
-        $editLocation = stripslashes($_REQUEST['editLocation']);
-        $editLocation = mysqli_real_escape_string($con, $editLocation);
-        $editTags = stripslashes($_REQUEST['editTags']);
-        $editTags = mysqli_real_escape_string($con, $editTags);
-        $editDate = ($_REQUEST['editDate']);
-        //$query    = "UPDATE `tbevents` SET eventname=$editName, description=$editDescription, date=$editDate,location=$editLocation WHERE eventname='a'";
-        $q2="UPDATE tbevents SET eventname='$editName',description='$editDescription',date='$editDate',location='$editLocation',hashtags='$editTags' WHERE eventname='$toEdit'";             
-        $r2   = mysqli_query($con, $q2);
+        // Use prepared statement to prevent SQL injection
+        $q2 = "UPDATE tbevents SET eventname=?, description=?, date=?, location=?, hashtags=? WHERE eventname=?";
+        $stmt2 = mysqli_prepare($con, $q2);
+        mysqli_stmt_bind_param($stmt2, "ssssss", $editName, $editDescription, $editDate, $editLocation, $editTags, $toEdit);
+        mysqli_stmt_execute($stmt2);
+
+        mysqli_stmt_close($stmt2);
     }
+}
+
+// Function to validate and move uploaded file
+function validateAndMoveFile() {
+    $uploadOk = 1;
+    $file = $_FILES["fileToUpload"];
     
+    // Check file size
+    if ($file["size"] > 1000000) {
+        echo "Error: Picture must be 1MB or less";
+        $uploadOk = 0;
+    }
+
+    // Allow only certain file formats
+    $allowed_ext = array("jpg" => "image/jpg", "jpeg" => "image/jpeg");
+    $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
+
+    if (!array_key_exists($ext, $allowed_ext)) {
+        echo "Error: Please select a valid file format.";
+        $uploadOk = 0;
+    }
+
+    // Check if file already exists
+    if (file_exists($file["tmp_name"])) {
+        echo $file["name"] . " is already exists.";
+        $uploadOk = 0;
+    }
+
+    // Move the file to the target directory
+    if ($uploadOk == 1) {
+        if (move_uploaded_file($file["tmp_name"], "upload/" . $file["name"])) {
+            return true;
+        } else {
+            echo "Sorry, there was an error uploading your file.";
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 ?>
 
 

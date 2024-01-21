@@ -1,3 +1,35 @@
+<?php
+session_start();
+
+require('db.php');
+
+if (isset($_POST['username'])) {
+    $username = stripslashes($_REQUEST['username']);
+    $username = mysqli_real_escape_string($con, $username);
+    $password = stripslashes($_REQUEST['password']);
+    $password = mysqli_real_escape_string($con, $password);
+
+    $query = "SELECT * FROM `users` WHERE username='$username' AND password='" . ($password) . "'";
+    $result = mysqli_query($con, $query) or die(mysql_error());
+    $rows = mysqli_num_rows($result);
+
+    if ($rows == 1) {
+        $userData = mysqli_fetch_assoc($result);
+        $_SESSION['id'] = $userData['id']; 
+        $_SESSION['username'] = $username;
+
+        // Redirect to dashboard.php
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        echo "<div class='form'>
+              <h3>Wrong Username or password entered.</h3><br/>
+              <p class='link'>Click here to <a href='login.php'>Login</a> again.</p>
+              </div>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,36 +60,7 @@
         </div>
     </form>
 
-    <?php
-    require('db.php');
-    session_start();
 
-    if (isset($_POST['username'])) {
-        $username = stripslashes($_REQUEST['username']);
-        $username = mysqli_real_escape_string($con, $username);
-        $password = stripslashes($_REQUEST['password']);
-        $password = mysqli_real_escape_string($con, $password);
-
-        $query = "SELECT * FROM `users` WHERE username='$username' AND password='" . ($password) . "'";
-        $result = mysqli_query($con, $query) or die(mysql_error());
-        $rows = mysqli_num_rows($result);
-
-        if ($rows == 1) {
-            $userData = mysqli_fetch_assoc($result);
-            $_SESSION['id'] = $userData['id']; 
-            $_SESSION['username'] = $username;
-
-            
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            echo "<div class='form'>
-                  <h3>Wrong Username or password entered.</h3><br/>
-                  <p class='link'>Click here to <a href='login.php'>Login</a> again.</p>
-                  </div>";
-        }
-    }
-    ?>
 </div>
 </body>
 </html>

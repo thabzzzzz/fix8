@@ -1,101 +1,110 @@
 <?php
-        //include auth_session.php file on all user panel pages
-        include("auth_session.php");
-        require('db.php');
-        ?>
-                        <?php
+// include auth_session.php file on all user panel pages
+include("auth_session.php");
+require('db.php');
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['submit'])) {
+        $user = $_SESSION['username'];
+        
+        $fullName = sanitizeInput($_POST['fullName']);
+        $description = sanitizeInput($_POST['description']);
+        $contact = sanitizeInput($_POST['contact']);
+        $place = sanitizeInput($_POST['place']);
+        $DoB = sanitizeInput($_POST['DoB']);
 
+        // Fetch existing user data from the database
+        $sql = "SELECT * FROM users WHERE username=?";
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $user);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_array($result);
+        mysqli_stmt_close($stmt);
 
+        // Check and update fields only if they are not empty
+        if (!empty($fullName)) {
+            $fullName = mysqli_real_escape_string($con, $fullName);
+        } else {
+            $fullName = $row['fullName'];
+        }
 
-$user=$_SESSION["username"];
+        if (!empty($description)) {
+            $description = mysqli_real_escape_string($con, $description);
+        } else {
+            $description = $row['description'];
+        }
 
-?>
+        if (!empty($contact)) {
+            $contact = mysqli_real_escape_string($con, $contact);
+        } else {
+            $contact = $row['contact'];
+        }
 
-<?php
-if (isset($_POST['submit'])) {
-    $user = $_SESSION['username'];
+        if (!empty($place)) {
+            $place = mysqli_real_escape_string($con, $place);
+        } else {
+            $place = $row['location'];
+        }
 
-    $fullName = $_POST['fullName'];
-    $description = $_POST['description'];
-    $contact = $_POST['contact'];
-    $place = $_POST['place'];
-    $DoB = $_POST['DoB'];
+        if (!empty($DoB)) {
+            $DoB = mysqli_real_escape_string($con, $DoB);
+        } else {
+            $DoB = $row['dateOfBirth'];
+        }
 
-    // Fetch existing user data from the database
-    $sql = "SELECT * FROM users WHERE username='$user'";
-    $result = $con->query($sql);
-    $row = mysqli_fetch_array($result);
+        // Handle profile picture upload
+        if ($_FILES['fileToUpload']['size'] > 0) {
+            $target_dir = "profilePics/";
+            $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 
-    // Check and update fields only if they are not empty
-    if (!empty($fullName)) {
-        $fullName = mysqli_real_escape_string($con, $fullName);
-    } else {
-        $fullName = $row['fullName'];
-    }
+            // Add your checks for file type and size here
 
-    if (!empty($description)) {
-        $description = mysqli_real_escape_string($con, $description);
-    } else {
-        $description = $row['description'];
-    }
+            if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                // File uploaded successfully, update the profilePic field
+                $picName = $_FILES["fileToUpload"]["name"];
+                $updateQuery = "UPDATE users SET fullName=?, description=?, contact=?, location=?, dateOfBirth=?, profilePic=? WHERE username=?";
+                $stmt = mysqli_prepare($con, $updateQuery);
+                mysqli_stmt_bind_param($stmt, "sssssss", $fullName, $description, $contact, $place, $DoB, $picName, $user);
+                mysqli_stmt_execute($stmt);
 
-    if (!empty($contact)) {
-        $contact = mysqli_real_escape_string($con, $contact);
-    } else {
-        $contact = $row['contact'];
-    }
+                if (mysqli_stmt_affected_rows($stmt) > 0) {
+                    // Profile updated successfully
+                    echo "Profile updated successfully!";
+                } else {
+                    // Error updating profile
+                    echo "Error updating profile!";
+                }
 
-    if (!empty($place)) {
-        $place = mysqli_real_escape_string($con, $place);
-    } else {
-        $place = $row['location'];
-    }
+                mysqli_stmt_close($stmt);
+            } else {
+                // Error uploading file
+                echo "Sorry, there was an error uploading your file.";
+            }
+        } else {
+            // If no image uploaded, update other profile fields only
+            $updateQuery = "UPDATE users SET fullName=?, description=?, contact=?, location=?, dateOfBirth=? WHERE username=?";
+            $stmt = mysqli_prepare($con, $updateQuery);
+            mysqli_stmt_bind_param($stmt, "ssssss", $fullName, $description, $contact, $place, $DoB, $user);
+            mysqli_stmt_execute($stmt);
 
-    if (!empty($DoB)) {
-        $DoB = mysqli_real_escape_string($con, $DoB);
-    } else {
-        $DoB = $row['dateOfBirth'];
-    }
-
-    // Handle profile picture upload
-    if ($_FILES['fileToUpload']['size'] > 0) {
-        $target_dir = "profilePics/";
-        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-
-        // Add your checks for file type and size here
-
-        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-            // File uploaded successfully, update the profilePic field
-            $picName = $_FILES["fileToUpload"]["name"];
-            $updateQuery = "UPDATE users SET fullName='$fullName', description='$description', contact='$contact', location='$place', dateOfBirth='$DoB', profilePic='$picName' WHERE username='$user'";
-            $result = $con->query($updateQuery);
-
-            if ($result) {
+            if (mysqli_stmt_affected_rows($stmt) > 0) {
                 // Profile updated successfully
-                echo "Profile updated successfully!";
+                header("Location: profile.php");
+                exit();
             } else {
                 // Error updating profile
                 echo "Error updating profile!";
             }
-        } else {
-            // Error uploading file
-            echo "Sorry, there was an error uploading your file.";
-        }
-    } else {
-        // If no image uploaded, update other profile fields only
-        $updateQuery = "UPDATE users SET fullName='$fullName', description='$description', contact='$contact', location='$place', dateOfBirth='$DoB' WHERE username='$user'";
-        $result = $con->query($updateQuery);
 
-        if ($result) {
-            // Profile updated successfully
-            header("Location: profile.php");
-            exit();
-        } else {
-            // Error updating profile
-            echo "Error updating profile!";
+            mysqli_stmt_close($stmt);
         }
     }
+}
+
+// Function to sanitize user input
+function sanitizeInput($input) {
+    return htmlspecialchars(strip_tags($input));
 }
 ?>
         <!DOCTYPE html>

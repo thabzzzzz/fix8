@@ -1,8 +1,9 @@
-        <?php
-        //include auth_session.php file on all user panel pages
-        include("auth_session.php");
-        require('db.php');
-        ?>
+<?php
+ob_start();
+include("auth_session.php");
+require('db.php');
+?>
+
         <!DOCTYPE html>
         <html>
         <head>
@@ -139,6 +140,9 @@ if ($result->num_rows > 0) {
             <?php
             include('footer.php');
             ?>
+            <?php
+ob_end_flush();
+?>
         </body>
         <script src="script.js"></script>
         </html>
